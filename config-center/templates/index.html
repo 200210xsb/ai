@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARL 配置管理中心</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { text-align: center; font-size: 24px; }
+        .header p { text-align: center; margin-top: 5px; opacity: 0.9; font-size: 14px; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card h2 { font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; color: #555; }
+        .form-group input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; transition: border-color 0.3s; }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a6fd6; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .toast { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 4px; color: white; font-size: 14px; opacity: 0; transition: opacity 0.3s; z-index: 1000; }
+        .toast.show { opacity: 1; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .restart-section { text-align: center; padding: 20px; }
+        .restart-section p { margin-bottom: 15px; color: #666; }
+        .notice { background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin-bottom: 15px; font-size: 13px; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ARL 配置管理中心</h1>
+        <p>修改配置后会自动重启 ARL 服务生效</p>
+    </div>
+
+    <div class="container">
+        <div class="notice"><strong>提示：</strong>修改配置后，系统会自动重启 ARL 相关容器使配置生效。</div>
+
+        <div class="card">
+            <h2>API Key 配置</h2>
+            <form id="apiKeyForm">
+                <div class="form-group">
+                    <label>API_KEY</label>
+                    <input type="text" id="api_key" placeholder="请输入API_KEY">
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>FOFA 配置</h2>
+            <form id="fofaForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="fofa_email" placeholder="请输入FOFA邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label>Key</label>
+                        <input type="text" id="fofa_key" placeholder="请输入FOFA Key">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Hunter 配置</h2>
+            <form id="hunterForm">
+                <div class="form-group">
+                    <label>API Key</label>
+                    <input type="text" id="hunter_api_key" placeholder="请输入Hunter API Key">
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Quake 配置</h2>
+            <form id="quakeForm">
+                <div class="form-group">
+                    <label>Token</label>
+                    <input type="text" id="quake_token" placeholder="请输入Quake Token">
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>ZoomEye 配置</h2>
+            <form id="zoomeyeForm">
+                <div class="form-group">
+                    <label>API Key</label>
+                    <input type="text" id="zoomeye_api_key" placeholder="请输入ZoomEye API Key">
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>GitHub 配置</h2>
+            <form id="githubForm">
+                <div class="form-group">
+                    <label>Token</label>
+                    <input type="text" id="github_token" placeholder="请输入GitHub Token">
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>代理配置</h2>
+            <form id="proxyForm">
+                <div class="form-group">
+                    <label>HTTP Proxy URL</label>
+                    <input type="text" id="proxy_url" placeholder="例如: http://127.0.0.1:8080">
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>钉钉配置</h2>
+            <form id="dingdingForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Access Token</label>
+                        <input type="text" id="dingding_token" placeholder="请输入钉钉Access Token">
+                    </div>
+                    <div class="form-group">
+                        <label>Secret</label>
+                        <input type="text" id="dingding_secret" placeholder="请输入钉钉Secret">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>邮件配置</h2>
+            <form id="emailForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SMTP Host</label>
+                        <input type="text" id="email_host" placeholder="例如: smtp.example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>SMTP Port</label>
+                        <input type="text" id="email_port" placeholder="例如: 465">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="email_username" placeholder="请输入邮箱用户名">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="email_password" placeholder="请输入邮箱密码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>收件人</label>
+                    <input type="email" id="email_to" placeholder="请输入收件人邮箱">
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>安全配置</h2>
+            <form id="blacklistForm">
+                <div class="form-group">
+                    <label>IP 黑名单 (每行一个)</label>
+                    <textarea id="black_ips" rows="4" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;" placeholder="127.0.0.0/8"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>域名黑名单 (每行一个)</label>
+                    <textarea id="forbidden_domains" rows="3" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;" placeholder="xxx.xx"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+
+        <div class="card restart-section">
+            <h2 style="border-bottom:none;text-align:center;">服务控制</h2>
+            <p>手动重启 ARL 所有服务</p>
+            <button class="btn btn-danger" onclick="restartARL()">重启 ARL 服务</button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.className = 'toast', 3000);
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const result = await response.json();
+                if (result.code === 200 && result.data) {
+                    const config = result.data;
+                    document.getElementById('api_key').value = config.ARL?.API_KEY || '';
+                    document.getElementById('fofa_email').value = config.FOFA?.EMAIL || '';
+                    document.getElementById('fofa_key').value = config.FOFA?.KEY || '';
+                    document.getElementById('hunter_api_key').value = config.QUERY_PLUGIN?.hunter_qax?.api_key || '';
+                    document.getElementById('quake_token').value = config.QUERY_PLUGIN?.quake_360?.quake_token || '';
+                    document.getElementById('zoomeye_api_key').value = config.QUERY_PLUGIN?.zoomeye?.api_key || '';
+                    document.getElementById('github_token').value = config.GITHUB?.TOKEN || '';
+                    document.getElementById('proxy_url').value = config.PROXY?.HTTP_URL || '';
+                    document.getElementById('dingding_token').value = config.DINGDING?.ACCESS_TOKEN || '';
+                    document.getElementById('dingding_secret').value = config.DINGDING?.SECRET || '';
+                    document.getElementById('email_host').value = config.EMAIL?.HOST || '';
+                    document.getElementById('email_port').value = config.EMAIL?.PORT || '';
+                    document.getElementById('email_username').value = config.EMAIL?.USERNAME || '';
+                    document.getElementById('email_password').value = config.EMAIL?.PASSWORD || '';
+                    document.getElementById('email_to').value = config.EMAIL?.TO || '';
+                    document.getElementById('black_ips').value = (config.ARL?.BLACK_IPS || []).join('\n');
+                    document.getElementById('forbidden_domains').value = (config.ARL?.FORBIDDEN_DOMAINS || []).join('\n');
+                }
+            } catch (error) {
+                showToast('加载配置失败: ' + error.message, 'error');
+            }
+        }
+
+        ['apiKeyForm', 'fofaForm', 'hunterForm', 'quakeForm', 'zoomeyeForm', 'githubForm', 'proxyForm', 'dingdingForm', 'emailForm', 'blacklistForm'].forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const endpoint = '/api/config/' + formId.replace('Form', '').replace('apiKey', 'api_key').replace('dingding', 'dingding');
+                    const data = {};
+                    const inputs = form.querySelectorAll('input, textarea');
+                    inputs.forEach(input => {
+                        if (input.id) data[input.id.replace(formId === 'fofaForm' ? 'fofa_' : formId === 'hunterForm' ? 'hunter_' : formId === 'quakeForm' ? 'quake_' : formId === 'zoomeyeForm' ? 'zoomeye_' : formId === 'githubForm' ? 'github_' : formId === 'proxyForm' ? 'proxy_' : formId === 'dingdingForm' ? 'dingding_' : formId === 'emailForm' ? 'email_' : '', '')] = input.value;
+                    });
+                    try {
+                        const response = await fetch(endpoint, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                        const result = await response.json();
+                        showToast(result.message, result.code === 200 ? 'success' : 'error');
+                    } catch (error) {
+                        showToast('保存失败: ' + error.message, 'error');
+                    }
+                };
+            }
+        });
+
+        async function restartARL() {
+            if (!confirm('确定要重启 ARL 所有服务吗？')) return;
+            try {
+                const response = await fetch('/api/arl/restart', { method: 'POST' });
+                const result = await response.json();
+                showToast(result.message, result.code === 200 ? 'success' : 'error');
+            } catch (error) {
+                showToast('重启失败: ' + error.message, 'error');
+            }
+        }
+
+        loadConfig();
+    </script>
+</body>
+</html>

@@ -99,3 +99,47 @@ cd ARL-docker/
 chmod +x setup_mac_docker.sh
 bash setup_mac_docker.sh
 ```
+
+---
+
+## 魔改版 - 配置管理中心
+
+在原版基础上新增**配置管理中心**，支持前端可视化修改配置。
+
+### 部署
+
+```bash
+git clone https://github.com/200210xsb/ai.git
+cd ai/
+chmod +x deploy_mod.sh
+bash deploy_mod.sh
+```
+
+### 功能
+
+| 配置项 | 说明 |
+|--------|------|
+| API_KEY | ARL后端API密钥 |
+| FOFA | FOFA邮箱和Key |
+| Hunter | Hunter API Key |
+| Quake | 360 Quake Token |
+| ZoomEye | ZoomEye API Key |
+| GitHub | GitHub Token |
+| 代理 | HTTP代理URL |
+| 钉钉 | 钉钉机器人配置 |
+| 邮件 | SMTP邮件推送 |
+| 安全 | IP/域名黑名单 |
+
+### 访问
+
+| 服务 | 地址 |
+|------|------|
+| ARL Web | `https://IP:5003/` |
+| 配置中心 | `http://IP:5005/` |
+| RabbitMQ | `http://IP:15672/` |
+
+### 使用方式
+
+1. 访问 `http://IP:5005/`
+2. 修改配置后点击保存
+3. 系统自动更新 `config-docker.yaml` 并重启 ARL 容器

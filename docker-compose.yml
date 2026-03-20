@@ -86,3 +86,18 @@ services:
         options:
           max-size: "1M"
           max-file: "10"
+
+    config-center:
+      build:
+        context: ./config-center
+        dockerfile: Dockerfile
+      container_name: arl_config_center
+      restart: unless-stopped
+      ports:
+        - "5005:5005"
+      volumes:
+        - ./config-docker.yaml:/code/config-docker.yaml
+        - /var/run/docker.sock:/var/run/docker.sock
+      environment:
+        - TZ=Asia/Shanghai
+        - CONFIG_PATH=/code/config-docker.yaml
