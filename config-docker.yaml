@@ -67,7 +67,7 @@ QUERY_PLUGIN:
 
 #钉钉消息推送配置
 #钉钉添加机器人，请查看
-#https://github.com/TophantTechnology/ARL/wiki/ARL%202.3%20%E6%96%B0%E6%B7%BB%E5%8A%A0%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E
+#https://github.com/TophantTechnology/ARL/wiki/ARL%202.3%20%E6%96%B0%E6%B7%BB%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E
 DINGDING:
   SECRET: ""
   ACCESS_TOKEN: ""
@@ -101,14 +101,14 @@ PROXY:
 ARL:
   AUTH: true
   #API 认证key, 可以访问api/doc查看文档
-  API_KEY: ""
+  # 请修改为随机字符串，不要使用默认值
+  API_KEY: "arl-docker-mod-by-ai-2026"
   BLACK_IPS:
     - 127.0.0.0/8
     - 0.0.0.0/8
     - 172.16.0.0/12
     - 100.64.0.0/10
-    #- 10.0.0.0/8
-    #- 192.168.0.0/16
+    - 192.168.0.0/16
   ## 禁止域名，不可为空数组
   FORBIDDEN_DOMAINS:
     - xxx.xx

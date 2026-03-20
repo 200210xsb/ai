@@ -146,11 +146,11 @@ case $yn in
         if command -v yum &> /dev/null; then
             yum install -y python3
             pip3 install requests
-            python3 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arl-test
+            python3 ARL-Finger-ADD.py https://127.0.0.1:5004/ admin arl-test
         elif command -v apt-get &> /dev/null; then
             apt-get install -y python3 && apt-get install -y python3-pip
             pip install requests
-            python3 ARL-Finger-ADD.py https://127.0.0.1:5003/ admin arl-test
+            python3 ARL-Finger-ADD.py https://127.0.0.1:5004/ admin arl-test
         else
             echo "无法确定包管理器。请手动安装 Python3。"
             exit 1
@@ -162,5 +162,5 @@ echo "已完成ARL部署，感谢您的使用！"
 echo "Github：https://github.com/200210xsb/ai"
 # 输出URL
 CURRENT_IP=$(curl -s ipinfo.io/ip)
-URL="https://${CURRENT_IP}:5003"
+URL="https://${CURRENT_IP}:5004"
 echo "ARL URL: $URL"

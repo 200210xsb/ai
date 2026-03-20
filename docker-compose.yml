@@ -3,6 +3,12 @@ version: '3'
 volumes:
   arl_db:
     external: true
+  arl_backup:
+    driver: local
+
+networks:
+  arl_network:
+    driver: bridge
 
 services:
     web:
@@ -12,19 +18,35 @@ services:
         depends_on:
           - mongodb
           - rabbitmq
+        networks:
+          - arl_network
         ports:
-          #http 服务，默认不映射出来
-          #- "5003:80"
-          - "5003:443"
+          - "5004:443"
         volumes:
           - ./arl_web.log:/code/arl_web.log
           - ./config-docker.yaml:/code/app/config.yaml
           - ./image:/code/app/tmp_screenshot
           - ./poc:/opt/ARL-NPoC/xing/plugins/upload_poc
-        entrypoint: ["sh", "-c", "gen_crt.sh; nginx; wait-for-it.sh mongodb:27017; wait-for-it.sh rabbitmq:5672; gunicorn -b 0.0.0.0:5003 app.main:arl_app -w 3 --access-logfile arl_web.log"]
+        entrypoint: >
+          sh -c "gen_crt.sh; nginx; wait-for-it.sh mongodb:27017;
+          wait-for-it.sh rabbitmq:5672;
+          gunicorn -b 0.0.0.0:5003 app.main:arl_app -w 4 --access-logfile arl_web.log"
         environment:
           - LANG=en_US.UTF-8
           - TZ=Asia/Shanghai
+        deploy:
+          resources:
+            limits:
+              cpus: '2.0'
+              memory: 4G
+            reservations:
+              cpus: '0.5'
+              memory: 1G
+        logging:
+          driver: json-file
+          options:
+            max-size: 50m
+            max-file: "5"
 
     worker:
         image: 200210xsb/arl-docker-all
@@ -33,18 +55,33 @@ services:
         depends_on:
           - mongodb
           - rabbitmq
+        networks:
+          - arl_network
         volumes:
           - ./arl_worker.log:/code/arl_worker.log
           - ./config-docker.yaml:/code/app/config.yaml
           - ./image:/code/app/tmp_screenshot
           - ./poc:/opt/ARL-NPoC/xing/plugins/upload_poc
-        entrypoint: ["sh", "-c", "wait-for-it.sh mongodb:27017; wait-for-it.sh rabbitmq:5672;
-        celery -A app.celerytask.celery worker -l info -Q arlgithub -n arlgithub -c 2 -O fair -f arl_worker.log &
-         celery -A app.celerytask.celery worker -l info -Q arltask -n arltask -c 2 -O fair -f arl_worker.log"]
-
+        entrypoint: >
+          sh -c "wait-for-it.sh mongodb:27017; wait-for-it.sh rabbitmq:5672;
+          celery -A app.celerytask.celery worker -l info -Q arlgithub -n arlgithub -c 4 -O fair -f arl_worker.log &
+          celery -A app.celerytask.celery worker -l info -Q arltask -n arltask -c 4 -O fair -f arl_worker.log"
         environment:
           - LANG=en_US.UTF-8
           - TZ=Asia/Shanghai
+        deploy:
+          resources:
+            limits:
+              cpus: '3.0'
+              memory: 8G
+            reservations:
+              cpus: '1.0'
+              memory: 2G
+        logging:
+          driver: json-file
+          options:
+            max-size: 50m
+            max-file: "5"
 
     scheduler:
       image: 200210xsb/arl-docker-all
@@ -53,17 +90,36 @@ services:
       depends_on:
         - mongodb
         - rabbitmq
+      networks:
+        - arl_network
       volumes:
         - ./config-docker.yaml:/code/app/config.yaml
-      entrypoint: [ "sh", "-c", "wait-for-it.sh mongodb:27017; wait-for-it.sh rabbitmq:5672; python3.6 -m app.scheduler" ]
+      entrypoint: >
+        sh -c "wait-for-it.sh mongodb:27017; wait-for-it.sh rabbitmq:5672;
+        python3.6 -m app.scheduler"
       environment:
         - LANG=en_US.UTF-8
         - TZ=Asia/Shanghai
+      deploy:
+        resources:
+          limits:
+            cpus: '1.0'
+            memory: 2G
+          reservations:
+            cpus: '0.25'
+            memory: 512M
+      logging:
+        driver: json-file
+        options:
+          max-size: 20m
+          max-file: "3"
 
     mongodb:
         image: mongo:4.0.27
         container_name: arl_mongodb
         restart: always
+        networks:
+          - arl_network
         volumes:
           - arl_db:/data/db
           - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
@@ -71,18 +127,45 @@ services:
           - MONGO_INITDB_DATABASE=arl
           - MONGO_INITDB_ROOT_USERNAME=admin
           - MONGO_INITDB_ROOT_PASSWORD=admin
-
+        deploy:
+          resources:
+            limits:
+              cpus: '2.0'
+              memory: 4G
+            reservations:
+              cpus: '0.5'
+              memory: 1G
+        command: >
+          sh -c "mongod --wiredTigerCacheSizeGB 2 --bind_ip_all"
+        logging:
+          driver: json-file
+          options:
+            max-size: 50m
+            max-file: "5"
 
     rabbitmq:
       image: rabbitmq:3.8.19-management-alpine
       container_name: arl_rabbitmq
       restart: always
+      networks:
+        - arl_network
       environment:
         - RABBITMQ_DEFAULT_PASS=arlpassword
         - RABBITMQ_DEFAULT_USER=arl
         - RABBITMQ_DEFAULT_VHOST=arlv2host
+      deploy:
+        resources:
+          limits:
+            cpus: '1.0'
+            memory: 2G
+          reservations:
+            cpus: '0.25'
+            memory: 512M
+      command: >
+        sh -c "rabbitmqctl set_policy ha-all '^' '{\"ha-mode\":\"all\",\"ha-sync-mode\":\"automatic\"}' ;
+        rabbitmq-server"
       logging:
-        driver: "json-file"
+        driver: json-file
         options:
-          max-size: "1M"
-          max-file: "10"
+          max-size: 50m
+          max-file: "5"
