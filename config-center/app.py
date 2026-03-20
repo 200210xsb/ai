@@ -20,14 +20,25 @@ def save_config(config):
 def restart_arl_containers():
     try:
         client = docker.from_env()
-        containers = ['arl_web', 'arl_worker', 'arl_scheduler']
-        for name in containers:
+        # 尝试多种可能的容器名称
+        containers = [
+            ('arl_web', 'ai_arl_web'),
+            ('arl_worker', 'ai_arl_worker'),
+            ('arl_scheduler', 'ai_arl_scheduler')
+        ]
+        for name, alt_name in containers:
             try:
                 container = client.containers.get(name)
                 container.restart()
                 print(f"Restarted {name}")
             except Exception as e:
                 print(f"Failed to restart {name}: {e}")
+                try:
+                    container = client.containers.get(alt_name)
+                    container.restart()
+                    print(f"Restarted {alt_name}")
+                except Exception as e2:
+                    print(f"Failed to restart {alt_name}: {e2}")
     except Exception as e:
         print(f"Docker not available: {e}")
 
