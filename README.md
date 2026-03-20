@@ -1,6 +1,6 @@
 # ARL(灯塔) - Docker魔改版
 
-基于 [ARL-docker](https://github.com/honmashironeko/ARL-docker) 原版魔改，新增**配置管理中心**。
+> 个人自用魔改版本，基于 [ARL-docker](https://github.com/honmashironeko/ARL-docker) 原版
 
 ## 特性
 
